@@ -1,23 +1,22 @@
 package game;
 
-import java.awt.*;
-import java.util.Random;
-
+import java.awt.Point;
+// do dodadania
+// gruszka - odwaraca sterowanie kierunku
+// złote jabłko - mała szansa, pojawia się tylko na chwilę - daje 10 pkt 
+// piwo - przyspiesza węża i daje możliwość zabicia innego weża - ściany nie zabijaja
 public class Apple {
     private Point position;
-    private final Random random = new Random();
 
-    public Apple(int width, int height, Snake snake) {
-        spawn(width, height, snake);
-    }
-
-    public void spawn(int width, int height, Snake snake) {
-        do {
-            position = new Point(random.nextInt(width), random.nextInt(height));
-        } while (snake.contains(position));
+    public Apple(int x, int y) {
+        position = new Point(x, y);
     }
 
     public Point getPosition() {
         return position;
+    }
+
+    public void setPosition(Point p) {
+        position = p;
     }
 }

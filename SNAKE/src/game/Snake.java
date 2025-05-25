@@ -1,16 +1,24 @@
 package game;
 
+import game.utils.Direction;
 import java.awt.*;
 import java.util.LinkedList;
 
 public class Snake {
     private LinkedList<Point> body = new LinkedList<>();
-    private char direction = 'R';
+    private Direction direction = Direction.RIGHT;
     private boolean directionChanged = false;
 
     public Snake(Point start) {
         body.add(start);
     }
+
+    public Snake(Point start, Direction direction) {
+        this.body = new LinkedList<>();
+        this.body.add(start);
+        this.direction = direction;
+    }
+
 
     public LinkedList<Point> getBody() {
         return body;
@@ -20,14 +28,14 @@ public class Snake {
         return body.getFirst();
     }
 
-    public void setDirection(char newDir) {
+    public void setDirection(Direction newDir) {
         if (!directionChanged && isValidDirectionChange(newDir)) {
             direction = newDir;
             directionChanged = true;
         }
     }
 
-    public char getDirection() {
+    public Direction getDirection() {
         return direction;
     }
 
@@ -38,10 +46,10 @@ public class Snake {
     public Point getNextPosition() {
         Point head = new Point(getHead());
         switch (direction) {
-            case 'U': head.y--; break;
-            case 'D': head.y++; break;
-            case 'L': head.x--; break;
-            case 'R': head.x++; break;
+            case UP -> head.y--;
+            case DOWN -> head.y++;
+            case LEFT -> head.x--;
+            case RIGHT -> head.x++;
         }
         return head;
     }
@@ -49,24 +57,26 @@ public class Snake {
     public void move(boolean grow) {
         Point next = getNextPosition();
         body.addFirst(next);
-        if (!grow) body.removeLast();
+        if (!grow) {
+            body.removeLast();
+        }
     }
 
     public boolean contains(Point p) {
         return body.contains(p);
     }
 
-    private boolean isValidDirectionChange(char newDir) {
-        return (direction == 'U' && newDir != 'D') ||
-               (direction == 'D' && newDir != 'U') ||
-               (direction == 'L' && newDir != 'R') ||
-               (direction == 'R' && newDir != 'L');
+    private boolean isValidDirectionChange(Direction newDir) {
+        return (direction == Direction.UP && newDir != Direction.DOWN) ||
+               (direction == Direction.DOWN && newDir != Direction.UP) ||
+               (direction == Direction.LEFT && newDir != Direction.RIGHT) ||
+               (direction == Direction.RIGHT && newDir != Direction.LEFT);
     }
 
     public void reset(Point start) {
         body.clear();
         body.add(start);
-        direction = 'R';
+        direction = Direction.RIGHT;
         directionChanged = false;
     }
 }
