@@ -1,6 +1,9 @@
 package game;
 
+import game.AI.AggressiveSnakeAI;
 import game.AI.SimpleSnakeAI;
+import game.AI.SnakeAI;
+import game.level.LevelType;
 import game.utils.Direction;
 import java.awt.*;
 import java.awt.event.*;
@@ -12,7 +15,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private final int WIDTH = 20;
     private final int HEIGHT = 20;
     private final int DELAY = 150;
-    private SimpleSnakeAI ai;
+    private SnakeAI ai;
+    private LevelType level = LevelType.NORMAL;
 
     private Snake playerSnake;
     private Snake aiSnake;
@@ -30,7 +34,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
         addKeyListener(this);
 
-        ai = new SimpleSnakeAI();
+        //ai = new SimpleSnakeAI();
         startGame(); 
         timer = new Timer(DELAY, this);
         timer.start();
@@ -38,12 +42,24 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     private void startGame() {
         playerSnake = new Snake(new Point(5,5), Direction.RIGHT);
-        aiSnake = new Snake(new Point(WIDTH - 6, HEIGHT - 6), Direction.LEFT);
         
+            if (level == LevelType.NORMAL) {
+        aiSnake = new Snake(new Point(WIDTH - 6, HEIGHT - 6), Direction.LEFT);
+        ai = new SimpleSnakeAI();
+        setBackground(Color.BLACK);
+
+    } else if (level == LevelType.HARD) {
+        aiSnake = new Snake(new Point(WIDTH - 6, HEIGHT - 6), Direction.LEFT);
+        ai = new AggressiveSnakeAI(); // <- będziesz musiał stworzyć nową klasę AI
+        setBackground(Color.ORANGE);
+    }
+
         spawnApple();
         running = true;
         gameOver = false;
         score = 0;
+        
+
     }
 
     private void spawnApple() {
@@ -66,6 +82,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         // Resetujemy flagę zmiany kierunku - pozwalamy na nową zmianę w następnym ticku
         playerSnake.resetDirectionChangeFlag();
         aiSnake.resetDirectionChangeFlag();
+
+        if (score == 5) {
+            gameWon();
+        }
 
         repaint();
     }
@@ -100,22 +120,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     }
 
     private void moveAI() {
-        Point aiHead = aiSnake.getHead();
-        Point applePos = apple.getPosition();
+    Direction newDir = ai.getNextDirection(aiSnake, playerSnake, apple.getPosition());
 
-        // Prosta AI - idzie w osi X lub Y w stronę jabłka
-        Direction newDir = aiSnake.getDirection();
-        if (applePos.x < aiHead.x && newDir != Direction.RIGHT) newDir = Direction.LEFT;
-        else if (applePos.x > aiHead.x && newDir != Direction.LEFT) newDir = Direction.RIGHT;
-        else if (applePos.y < aiHead.y && newDir != Direction.DOWN) newDir = Direction.UP;
-        else if (applePos.y > aiHead.y && newDir != Direction.UP) newDir = Direction.DOWN;
+    aiSnake.setDirection(newDir);
+    Point nextPos = nextPosition(aiSnake);
 
-        aiSnake.setDirection(newDir);
-
-        aiSnake.setDirection(newDir);
-        Point nextPos = nextPosition(aiSnake);
-        // Jeśli kolizja, zmien kierunek na przeciwny
-        if (collision(nextPos, aiSnake)) {
+    if (collision(nextPos, aiSnake)) {
             switch (newDir) {
                 case UP -> newDir = Direction.LEFT;
                 case DOWN -> newDir = Direction.RIGHT;
@@ -131,10 +141,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-        boolean grow = nextPos.equals(apple.getPosition());
-        aiSnake.move(grow);
-        if (grow) spawnApple();
-    }
+    boolean grow = nextPos.equals(apple.getPosition());
+    aiSnake.move(grow);
+    if (grow) spawnApple();
+}
+
 
     private Point nextPosition(Snake s) {
         Point head = s.getHead();
@@ -238,7 +249,41 @@ public void keyTyped(KeyEvent e) {
     // można pominąć lub zostawić pusto
 }
 
+private void gameWon() {
+        timer.stop(); // zatrzymujemy grę
 
+        String[] options = {"Normal", "Hard"};
+        int choice = JOptionPane.showOptionDialog(
+            this,
+            "Gratulacje! Wygrałeś! Wybierz poziom trudności dla następnego poziomu:",
+            "Wygrana",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.INFORMATION_MESSAGE,
+            null,
+            options,
+            options[0]
+        );
 
+        if (choice == 0) {
+            level = LevelType.NORMAL;
+        } else if (choice == 1) {
+            level = LevelType.HARD;
+        } else {
+            level = LevelType.NORMAL;
+        }
+
+        resetGame();
+    }
+
+    private void resetGame() {
+        score = 0;
+        // zresetuj pozycję węża, jabłka, kierunek, prędkość zależnie od levelType
+
+        startGame();
+        timer.start();
+    }
 }
+
+
+
 
