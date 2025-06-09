@@ -5,6 +5,7 @@ import game.AI.SimpleSnakeAI;
 import game.AI.SnakeAI;
 import game.level.LevelType;
 import game.utils.Direction;
+import game.utils.HighScoreManager;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
@@ -33,6 +34,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         setBackground(Color.BLACK);
         setFocusable(true);
         addKeyListener(this);
+        StringBuilder message = new StringBuilder("TOP WYNIKI:\n");
+            for (String score : HighScoreManager.getTopScores(3)) {
+            message.append(score).append("\n");
+        }
+    JOptionPane.showMessageDialog(this, message.toString(), "Highscores", JOptionPane.INFORMATION_MESSAGE);
 
         //ai = new SimpleSnakeAI();
         startGame(); 
@@ -251,6 +257,17 @@ public void keyTyped(KeyEvent e) {
 
 private void gameWon() {
         timer.stop(); // zatrzymujemy grę
+
+
+
+          String name = JOptionPane.showInputDialog(this, "Gratulacje! Podaj swój nick:", "Zapisz wynik", JOptionPane.PLAIN_MESSAGE);
+
+    if (name != null && !name.trim().isEmpty()) {
+        HighScoreManager.saveScore(name.trim(), score); // Zapisujemy wynik
+        JOptionPane.showMessageDialog(this, "Wynik zapisany!", "Sukces", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+        JOptionPane.showMessageDialog(this, "Nie podano nicku. Wynik nie został zapisany.", "Uwaga", JOptionPane.WARNING_MESSAGE);
+    }
 
         String[] options = {"Normal", "Hard"};
         int choice = JOptionPane.showOptionDialog(
