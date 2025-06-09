@@ -8,6 +8,7 @@ import game.utils.Direction;
 import game.utils.HighScoreManager;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
 
@@ -18,6 +19,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private final int DELAY = 150;
     private SnakeAI ai;
     private LevelType level = LevelType.NORMAL;
+
+    private java.util.List<Point> obstacles = new ArrayList<>();
 
     private Snake playerSnake;
     private Snake aiSnake;
@@ -59,6 +62,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         ai = new AggressiveSnakeAI(); // <- będziesz musiał stworzyć nową klasę AI
         setBackground(Color.ORANGE);
     }
+        obstacles.clear();
+        for (int i = 0; i < 10; i++) {
+            Point p;
+            do {
+                p = new Point(random.nextInt(WIDTH), random.nextInt(HEIGHT));
+            } while (playerSnake.contains(p) || aiSnake.contains(p) || obstacles.contains(p));
+        obstacles.add(p);
+        }
 
         spawnApple();
         running = true;
@@ -72,7 +83,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         Point p;
         do {
             p = new Point(random.nextInt(WIDTH), random.nextInt(HEIGHT));
-        } while (playerSnake.contains(p) || aiSnake.contains(p));
+        } while (playerSnake.contains(p) || aiSnake.contains(p) || obstacles.contains(p));
         apple = new Apple(p.x, p.y);
     }
 
@@ -172,6 +183,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         if (s.getBody().contains(p)) return true;
         Snake other = (s == playerSnake) ? aiSnake : playerSnake;
         if (other.getBody().contains(p)) return true;
+        if (obstacles.contains(p)) return true;
         return false;
     }
 
@@ -189,6 +201,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             g.drawLine(i * TILE_SIZE, 0, i * TILE_SIZE, HEIGHT * TILE_SIZE);
         for (int i = 0; i <= HEIGHT; i++)
             g.drawLine(0, i * TILE_SIZE, WIDTH * TILE_SIZE, i * TILE_SIZE);
+
+        // Przeszkody - żółte
+        g.setColor(Color.YELLOW);
+        for (Point p : obstacles) {
+        g.fillRect(p.x * TILE_SIZE, p.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
+
 
         // Wąż gracza - zielony
         g.setColor(Color.GREEN);
