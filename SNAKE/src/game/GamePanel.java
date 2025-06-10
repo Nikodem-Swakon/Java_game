@@ -40,8 +40,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     private Random random = new Random();
 
+    /* Funkcja inicjalizująca grę */
     public GamePanel() {
-        loadConfig("level_config.txt");
+        loadConfig("level_config.txt"); // Ładujemy konfigurację z pliku
         setPreferredSize(new Dimension(WIDTH * TILE_SIZE, HEIGHT * TILE_SIZE));
         setBackground(Color.BLACK);
         setFocusable(true);
@@ -62,7 +63,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     }
 
 
-    private void startAIThreads() {
+    private void startAIThreads() { // Uruchamiamy wątki AI, które będą wykonywać ruchy węży AI
         aiThread1 = new Thread(() -> {
             while (running && !gameOver) {
                 moveAI();
@@ -89,7 +90,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         aiThread2.start();
     }
 
-    private void loadConfig(String filename) {
+    private void loadConfig(String filename) { // Ładujemy konfigurację z pliku
         try {
             List<String> lines = Files.readAllLines(Paths.get(filename));
             for (String line : lines) {
@@ -114,7 +115,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     } else if (level == LevelType.HARD) {
         aiSnake = new Snake(new Point(WIDTH - 6, HEIGHT - 6), Direction.LEFT);
-        ai = new AggressiveSnakeAI(); // <- będziesz musiał stworzyć nową klasę AI
+        ai = new AggressiveSnakeAI(); 
                  aiSnake2 = new Snake(new Point(WIDTH - 6, 5), Direction.LEFT);
                  ai2 = new AggressiveSnakeAI();
                  setBackground(Color.ORANGE);
@@ -136,7 +137,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     }
 
-    private void spawnApple() {
+    private void spawnApple() { // Sprawdzamy, czy jabłko nie pojawia się na wężach lub przeszkodach
         Point p;
         do {
             p = new Point(random.nextInt(WIDTH), random.nextInt(HEIGHT));
@@ -145,7 +146,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) { // Metoda wywoływana co tick, czyli co DELAY milisekund
         if (!running) return;
 
         movePlayer();
@@ -163,7 +164,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         repaint();
     }
 
-    public Point nextPosition(Snake s, Direction dir) {
+    public Point nextPosition(Snake s, Direction dir) { // Obliczamy następne położenie węża na podstawie jego kierunku
         Point head = s.getHead();
         Point next = new Point(head);
         switch (dir) {
@@ -177,14 +178,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 
     private void movePlayer() {
-        Point nextPos = nextPosition(playerSnake);
+        Point nextPos = nextPosition(playerSnake); // Obliczamy następne położenie węża gracza
         if (collision(nextPos, playerSnake)) {
             running = false;
             gameOver = true;
             timer.stop();
             return;
         }
-        boolean grow = nextPos.equals(apple.getPosition());
+        boolean grow = nextPos.equals(apple.getPosition()); // Sprawdzamy, czy wąż gracza zjadł jabłko
         playerSnake.move(grow);
         if (grow) {
             score++;
@@ -193,13 +194,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     }
 
     private void moveAI() {
-        synchronized (lock) {
+        synchronized (lock) { // Synchronizujemy dostęp do węża AI, aby uniknąć problemów z wielowątkowością
     Direction newDir = ai.getNextDirection(aiSnake, playerSnake, apple.getPosition());
 
     aiSnake.setDirection(newDir);
     Point nextPos = nextPosition(aiSnake);
 
-    if (collision(nextPos, aiSnake)) {
+    if (collision(nextPos, aiSnake)) {// Sprawdzamy kolizję z przeszkodami, ścianami i innymi wężami - jeśli jest kolizja, zmieniamy kierunek
             switch (newDir) {
                 case UP -> newDir = Direction.LEFT;
                 case DOWN -> newDir = Direction.RIGHT;
@@ -215,14 +216,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-    boolean grow = nextPos.equals(apple.getPosition());
+    boolean grow = nextPos.equals(apple.getPosition()); // Sprawdzamy, czy wąż AI zjadł jabłko
     aiSnake.move(grow);
     if (grow) spawnApple();
 }
     }
 
-    private void moveAI2() {
-        synchronized (lock) {
+    private void moveAI2() {// Metoda do ruchu drugiego węża AI
+        synchronized (lock) {// Synchronizujemy dostęp do węża AI 2, aby uniknąć problemów z wielowątkowością
         Direction newDir = ai2.getNextDirection(aiSnake2, playerSnake, apple.getPosition());
 
         aiSnake2.setDirection(newDir);
@@ -248,12 +249,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     }
 
 
-    private void stopAIThreads() {
+    private void stopAIThreads() {// Zatrzymujemy wątki AI, aby uniknąć problemów z wielowątkowością
         if (aiThread1 != null) aiThread1.interrupt();
         if (aiThread2 != null) aiThread2.interrupt();
     }
 
-    private Point nextPosition(Snake s) {
+    private Point nextPosition(Snake s) { // Zmieniamy input gracza na akcję na ekranie
         Point head = s.getHead();
         Point next = new Point(head);
         switch (s.getDirection()) {
@@ -279,11 +280,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     }
 
     private void checkCollisions() {
-        // Dodatkowo, możesz tu dodać kolizję głowa głowa lub inne warunki
+        // relikt po starym kodzie, który nie jest już potrzebny
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) { // Metoda odpowiedzialna za rysowanie elementów gry na ekranie
         super.paintComponent(g);
 
         // Siatka
@@ -342,7 +343,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
     }
 @Override
-public void keyPressed(KeyEvent e) {
+public void keyPressed(KeyEvent e) { // Metoda odpowiedzialna za obsługę klawiszy
     int key = e.getKeyCode();
 
     if (!gameOver) {
@@ -374,23 +375,23 @@ public void keyTyped(KeyEvent e) {
     // można pominąć lub zostawić pusto
 }
 
-private void gameWon() {
+private void gameWon() { // Metoda wywoływana, gdy gracz wygrał grę
 
-    stopAIThreads();
+    stopAIThreads(); // Zatrzymujemy wątki AI, aby uniknąć problemów z wielowątkowością
     timer.stop(); // zatrzymujemy grę
 
 
 
-          String name = JOptionPane.showInputDialog(this, "Gratulacje! Podaj swój nick:", "Zapisz wynik", JOptionPane.PLAIN_MESSAGE);
+          String name = JOptionPane.showInputDialog(this, "Gratulacje! Podaj swój nick:", "Zapisz wynik", JOptionPane.PLAIN_MESSAGE); // Prosimy o podanie nicku
 
-    if (name != null && !name.trim().isEmpty()) {
+    if (name != null && !name.trim().isEmpty()) { // Sprawdzamy, czy nick nie jest pusty
         HighScoreManager.saveScore(name.trim(), score); // Zapisujemy wynik
         JOptionPane.showMessageDialog(this, "Wynik zapisany!", "Sukces", JOptionPane.INFORMATION_MESSAGE);
     } else {
         JOptionPane.showMessageDialog(this, "Nie podano nicku. Wynik nie został zapisany.", "Uwaga", JOptionPane.WARNING_MESSAGE);
     }
 
-        String[] options = {"Normal", "Hard"};
+        String[] options = {"Normal", "Hard"}; // Opcje poziomów trudności
         int choice = JOptionPane.showOptionDialog(
             this,
             "Gratulacje! Wygrałeś! Wybierz poziom trudności dla następnego poziomu:",

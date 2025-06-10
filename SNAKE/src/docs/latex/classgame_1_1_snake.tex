@@ -1,0 +1,104 @@
+\doxysection{game.\+Snake Class Reference}
+\hypertarget{classgame_1_1_snake}{}\label{classgame_1_1_snake}\index{game.Snake@{game.Snake}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classgame_1_1_snake_aee22469fd34e76536639fffe05126b19}{Snake}} (Point start)
+\item 
+\mbox{\hyperlink{classgame_1_1_snake_a352396e3360602431f87186e50685274}{Snake}} (Point start, \mbox{\hyperlink{enumgame_1_1utils_1_1_direction}{Direction}} direction)
+\item 
+Linked\+List$<$ Point $>$ \mbox{\hyperlink{classgame_1_1_snake_a8346d9d8ed9880ba877769d016892b01}{get\+Body}} ()
+\item 
+Point \mbox{\hyperlink{classgame_1_1_snake_a1802994020ae6bdf9a34377216c4250c}{get\+Head}} ()
+\item 
+void \mbox{\hyperlink{classgame_1_1_snake_ab49f72ce0db8630ddccf11fe7e002854}{set\+Direction}} (\mbox{\hyperlink{enumgame_1_1utils_1_1_direction}{Direction}} new\+Dir)
+\item 
+\mbox{\hyperlink{enumgame_1_1utils_1_1_direction}{Direction}} \mbox{\hyperlink{classgame_1_1_snake_a54e360c65d649a34c21b57155b38c6c2}{get\+Direction}} ()
+\item 
+void \mbox{\hyperlink{classgame_1_1_snake_a4aedafc62f21623738a16919b66917c6}{reset\+Direction\+Change\+Flag}} ()
+\item 
+Point \mbox{\hyperlink{classgame_1_1_snake_a5b34b6a08d7e463f72a382393f371680}{get\+Next\+Position}} ()
+\item 
+void \mbox{\hyperlink{classgame_1_1_snake_a0b9306e986d3850da4a7e8a246a2c652}{move}} (boolean grow)
+\item 
+boolean \mbox{\hyperlink{classgame_1_1_snake_a4fe2ac3c9c42155fc1970eb53f2f6cd0}{contains}} (Point p)
+\item 
+void \mbox{\hyperlink{classgame_1_1_snake_a22c6fbf29a7904efb6f02472f7992372}{reset}} (Point start)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classgame_1_1_snake_aee22469fd34e76536639fffe05126b19}\index{game.Snake@{game.Snake}!Snake@{Snake}}
+\index{Snake@{Snake}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{Snake()}{Snake()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_aee22469fd34e76536639fffe05126b19} 
+game.\+Snake.\+Snake (\begin{DoxyParamCaption}\item[{Point}]{start}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_snake_a352396e3360602431f87186e50685274}\index{game.Snake@{game.Snake}!Snake@{Snake}}
+\index{Snake@{Snake}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{Snake()}{Snake()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_a352396e3360602431f87186e50685274} 
+game.\+Snake.\+Snake (\begin{DoxyParamCaption}\item[{Point}]{start}{, }\item[{\mbox{\hyperlink{enumgame_1_1utils_1_1_direction}{Direction}}}]{direction}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classgame_1_1_snake_a4fe2ac3c9c42155fc1970eb53f2f6cd0}\index{game.Snake@{game.Snake}!contains@{contains}}
+\index{contains@{contains}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_a4fe2ac3c9c42155fc1970eb53f2f6cd0} 
+boolean game.\+Snake.\+contains (\begin{DoxyParamCaption}\item[{Point}]{p}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_snake_a8346d9d8ed9880ba877769d016892b01}\index{game.Snake@{game.Snake}!getBody@{getBody}}
+\index{getBody@{getBody}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{getBody()}{getBody()}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_a8346d9d8ed9880ba877769d016892b01} 
+Linked\+List$<$ Point $>$ game.\+Snake.\+get\+Body (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_snake_a54e360c65d649a34c21b57155b38c6c2}\index{game.Snake@{game.Snake}!getDirection@{getDirection}}
+\index{getDirection@{getDirection}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{getDirection()}{getDirection()}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_a54e360c65d649a34c21b57155b38c6c2} 
+\mbox{\hyperlink{enumgame_1_1utils_1_1_direction}{Direction}} game.\+Snake.\+get\+Direction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_snake_a1802994020ae6bdf9a34377216c4250c}\index{game.Snake@{game.Snake}!getHead@{getHead}}
+\index{getHead@{getHead}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{getHead()}{getHead()}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_a1802994020ae6bdf9a34377216c4250c} 
+Point game.\+Snake.\+get\+Head (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_snake_a5b34b6a08d7e463f72a382393f371680}\index{game.Snake@{game.Snake}!getNextPosition@{getNextPosition}}
+\index{getNextPosition@{getNextPosition}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{getNextPosition()}{getNextPosition()}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_a5b34b6a08d7e463f72a382393f371680} 
+Point game.\+Snake.\+get\+Next\+Position (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_snake_a0b9306e986d3850da4a7e8a246a2c652}\index{game.Snake@{game.Snake}!move@{move}}
+\index{move@{move}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{move()}{move()}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_a0b9306e986d3850da4a7e8a246a2c652} 
+void game.\+Snake.\+move (\begin{DoxyParamCaption}\item[{boolean}]{grow}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_snake_a22c6fbf29a7904efb6f02472f7992372}\index{game.Snake@{game.Snake}!reset@{reset}}
+\index{reset@{reset}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{reset()}{reset()}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_a22c6fbf29a7904efb6f02472f7992372} 
+void game.\+Snake.\+reset (\begin{DoxyParamCaption}\item[{Point}]{start}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_snake_a4aedafc62f21623738a16919b66917c6}\index{game.Snake@{game.Snake}!resetDirectionChangeFlag@{resetDirectionChangeFlag}}
+\index{resetDirectionChangeFlag@{resetDirectionChangeFlag}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{resetDirectionChangeFlag()}{resetDirectionChangeFlag()}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_a4aedafc62f21623738a16919b66917c6} 
+void game.\+Snake.\+reset\+Direction\+Change\+Flag (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_snake_ab49f72ce0db8630ddccf11fe7e002854}\index{game.Snake@{game.Snake}!setDirection@{setDirection}}
+\index{setDirection@{setDirection}!game.Snake@{game.Snake}}
+\doxysubsubsection{\texorpdfstring{setDirection()}{setDirection()}}
+{\footnotesize\ttfamily \label{classgame_1_1_snake_ab49f72ce0db8630ddccf11fe7e002854} 
+void game.\+Snake.\+set\+Direction (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{enumgame_1_1utils_1_1_direction}{Direction}}}]{new\+Dir}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+game/\mbox{\hyperlink{_snake_8java}{Snake.\+java}}\end{DoxyCompactItemize}
