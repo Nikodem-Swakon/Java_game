@@ -5,7 +5,19 @@ import java.io.*;
 import java.util.*;
 
 public class HighScoreManager {
-   private static final String FILE_NAME = "C:/Users/Admin-Niko/Documents/_STUDIA/_Net_Java/Javagame/SNAKE/src/highscores.txt";
+    private static final String FILE_NAME = "scores.txt";
+
+    // Tworzy plik, jeśli nie istnieje
+    private static void ensureFileExists() {
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
     public static void saveScore(String playerName, int score) {

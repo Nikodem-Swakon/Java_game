@@ -8,22 +8,30 @@ import game.utils.Direction;
 import game.utils.HighScoreManager;
 import java.awt.*;
 import java.awt.event.*;
+import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import javax.swing.*;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
-    private final int TILE_SIZE = 25;
-    private final int WIDTH = 20;
-    private final int HEIGHT = 20;
-    private final int DELAY = 150;
+    private  int TILE_SIZE;
+    private  int WIDTH;
+    private  int HEIGHT;
+    private  int DELAY;
     private SnakeAI ai;
+    private SnakeAI ai2;
     private LevelType level = LevelType.NORMAL;
 
     private java.util.List<Point> obstacles = new ArrayList<>();
 
+    private final Object lock = new Object();
+    private Thread aiThread1;
+    private Thread aiThread2;
+
     private Snake playerSnake;
     private Snake aiSnake;
+    private Snake aiSnake2;
     private Apple apple;
     private Timer timer;
     private boolean running = true;
@@ -33,34 +41,83 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private Random random = new Random();
 
     public GamePanel() {
+        loadConfig("level_config.txt");
         setPreferredSize(new Dimension(WIDTH * TILE_SIZE, HEIGHT * TILE_SIZE));
         setBackground(Color.BLACK);
         setFocusable(true);
         addKeyListener(this);
+
         StringBuilder message = new StringBuilder("TOP WYNIKI:\n");
-            for (String score : HighScoreManager.getTopScores(3)) {
+        for (String score : HighScoreManager.getTopScores(3)) {
             message.append(score).append("\n");
         }
-    JOptionPane.showMessageDialog(this, message.toString(), "Highscores", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, message.toString(), "Highscores", JOptionPane.INFORMATION_MESSAGE);
 
-        //ai = new SimpleSnakeAI();
-        startGame(); 
+        startGame();
         timer = new Timer(DELAY, this);
         timer.start();
+
+        startAIThreads();
+
     }
 
+
+    private void startAIThreads() {
+        aiThread1 = new Thread(() -> {
+            while (running && !gameOver) {
+                moveAI();
+                try {
+                    Thread.sleep(DELAY);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        });
+
+        aiThread2 = new Thread(() -> {
+            while (running && !gameOver) {
+                moveAI2();
+                try {
+                    Thread.sleep(DELAY);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        });
+
+        aiThread1.start();
+        aiThread2.start();
+    }
+
+    private void loadConfig(String filename) {
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(filename));
+            for (String line : lines) {
+                if (line.startsWith("WIDTH=")) WIDTH = Integer.parseInt(line.substring(6));
+                else if (line.startsWith("HEIGHT=")) HEIGHT = Integer.parseInt(line.substring(7));
+                else if (line.startsWith("TILE_SIZE=")) TILE_SIZE = Integer.parseInt(line.substring(10));
+                else if (line.startsWith("DELAY=")) DELAY = Integer.parseInt(line.substring(6));
+            }
+        } catch (Exception e) {
+            System.out.println("error" + e.getMessage());
+        }
+    }
     private void startGame() {
         playerSnake = new Snake(new Point(5,5), Direction.RIGHT);
         
             if (level == LevelType.NORMAL) {
         aiSnake = new Snake(new Point(WIDTH - 6, HEIGHT - 6), Direction.LEFT);
         ai = new SimpleSnakeAI();
-        setBackground(Color.BLACK);
+        aiSnake2 = new Snake(new Point(WIDTH - 6, 5), Direction.LEFT);
+        ai2 = new SimpleSnakeAI();
+                setBackground(Color.BLACK);
 
     } else if (level == LevelType.HARD) {
         aiSnake = new Snake(new Point(WIDTH - 6, HEIGHT - 6), Direction.LEFT);
         ai = new AggressiveSnakeAI(); // <- będziesz musiał stworzyć nową klasę AI
-        setBackground(Color.ORANGE);
+                 aiSnake2 = new Snake(new Point(WIDTH - 6, 5), Direction.LEFT);
+                 ai2 = new AggressiveSnakeAI();
+                 setBackground(Color.ORANGE);
     }
         obstacles.clear();
         for (int i = 0; i < 10; i++) {
@@ -92,14 +149,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         if (!running) return;
 
         movePlayer();
-        moveAI();
 
         checkCollisions();
 
         // Resetujemy flagę zmiany kierunku - pozwalamy na nową zmianę w następnym ticku
         playerSnake.resetDirectionChangeFlag();
         aiSnake.resetDirectionChangeFlag();
-
+        aiSnake2.resetDirectionChangeFlag();
         if (score == 5) {
             gameWon();
         }
@@ -137,6 +193,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     }
 
     private void moveAI() {
+        synchronized (lock) {
     Direction newDir = ai.getNextDirection(aiSnake, playerSnake, apple.getPosition());
 
     aiSnake.setDirection(newDir);
@@ -162,7 +219,39 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     aiSnake.move(grow);
     if (grow) spawnApple();
 }
+    }
 
+    private void moveAI2() {
+        synchronized (lock) {
+        Direction newDir = ai2.getNextDirection(aiSnake2, playerSnake, apple.getPosition());
+
+        aiSnake2.setDirection(newDir);
+        Point nextPos = nextPosition(aiSnake2);
+
+        if (collision(nextPos, aiSnake2)) {
+            switch (newDir) {
+                case UP -> newDir = Direction.LEFT;
+                case DOWN -> newDir = Direction.RIGHT;
+                case LEFT -> newDir = Direction.DOWN;
+                case RIGHT -> newDir = Direction.UP;
+            }
+
+            aiSnake2.setDirection(newDir);
+            nextPos = nextPosition(aiSnake2);
+            if (collision(nextPos, aiSnake2)) return;
+        }
+
+        boolean grow = nextPos.equals(apple.getPosition());
+        aiSnake2.move(grow);
+        if (grow) spawnApple();
+    }
+    }
+
+
+    private void stopAIThreads() {
+        if (aiThread1 != null) aiThread1.interrupt();
+        if (aiThread2 != null) aiThread2.interrupt();
+    }
 
     private Point nextPosition(Snake s) {
         Point head = s.getHead();
@@ -177,6 +266,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     }
 
     private boolean collision(Point p, Snake s) {
+        //ai1+ai2
+        if (aiSnake2 != null && aiSnake2.getBody().contains(p)) return true;
         // kolizja ze ścianami
         if (p.x < 0 || p.y < 0 || p.x >= WIDTH || p.y >= HEIGHT) return true;
         // kolizja z własnym ciałem i ciałem drugiego węża
@@ -221,6 +312,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             g.fillRect(p.x * TILE_SIZE, p.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         }
 
+        // Wąż AI 2 – fioletowy
+        g.setColor(Color.MAGENTA);
+        for (Point p : aiSnake2.getBody()) {
+            g.fillRect(p.x * TILE_SIZE, p.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
+
+
         // Jabłko
         g.setColor(Color.RED);
         Point ap = apple.getPosition();
@@ -258,8 +356,10 @@ public void keyPressed(KeyEvent e) {
     } else {
         // Jeśli gra skończona i wciśniemy ENTER, restart gry
         if (key == KeyEvent.VK_ENTER) {
+            stopAIThreads();
             startGame();
             timer.start();
+            startAIThreads();
         }
     }
 }
@@ -275,7 +375,9 @@ public void keyTyped(KeyEvent e) {
 }
 
 private void gameWon() {
-        timer.stop(); // zatrzymujemy grę
+
+    stopAIThreads();
+    timer.stop(); // zatrzymujemy grę
 
 
 
@@ -314,9 +416,10 @@ private void gameWon() {
     private void resetGame() {
         score = 0;
         // zresetuj pozycję węża, jabłka, kierunek, prędkość zależnie od levelType
-
+        stopAIThreads();
         startGame();
         timer.start();
+        startAIThreads();
     }
 }
 
